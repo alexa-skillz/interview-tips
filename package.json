@@ -1,0 +1,29 @@
+{
+  "name": "interviewTips",
+  "version": "1.0.0",
+  "description": "An [AWS Lambda](http://aws.amazon.com/lambda) function with a custom interview tips Alexa skill.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [],
+  "author": "Jonathan Heemstra, Megan Reardon, Peter Kim, Britt Johnson",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "alexa-app": "^2.3.4",
+    "aws-lambda-mock-context": "^3.0.1",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
+    "gulp": "^3.9.1",
+    "gulp-cache": "^0.4.5",
+    "gulp-eslint": "^3.0.1",
+    "gulp-istanbul": "^1.1.1",
+    "gulp-mocha": "^3.0.1",
+    "lodash": "^4.17.3",
+    "mocha": "^3.2.0",
+    "request": "^2.79.0",
+    "request-promise": "^4.1.1",
+    "winston": "^2.3.0"
+  }
+}
