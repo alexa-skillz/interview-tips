@@ -1,0 +1,10 @@
+GetNewTipIntent a tip
+GetNewTipIntent an interview tip
+GetNewTipIntent tell me a tip
+GetNewTipIntent tell me an interview tip
+GetNewTipIntent give me a tip
+GetNewTipIntent give me an interview tip
+GetNewTipIntent give me some information
+GetNewTipIntent give me some interview information
+GetNewTipIntent tell me something
+GetNewTipIntent give me something

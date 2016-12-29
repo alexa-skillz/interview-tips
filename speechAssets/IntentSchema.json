@@ -1,0 +1,16 @@
+{
+  "intents": [
+    {
+      "intent": "GetNewTipIntent"
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
+    }
+  ]
+ }
