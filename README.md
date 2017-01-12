@@ -4,37 +4,628 @@ An [AWS Lambda](http://aws.amazon.com/lambda) function with an Alexa skill for t
 ## Concepts
 This skill has no external dependencies or session management, and creates a Lambda function for handling Alexa Skill requests.
 
-## Setup
-To run this example skill you need to do two things. The first is to deploy the example code in Lambda, and the second is to configure the Alexa skill to use Lambda.
-
-### AWS Lambda Setup
-1. Go to the AWS Console and click on the Lambda link. Note: ensure you are in us-east or you won't be able to use Alexa with Lambda.
-2. Click on the Create a Lambda Function or Get Started Now button.
-3. Skip the blueprint.
-4. Name the Lambda Function "interviewTips".
-5. Select the runtime as Node.js.
-6. Go to the the src directory, select all files and then create a zip file, make sure the zip file does not contain the src directory itself, otherwise Lambda function will not work.
-7. Select Code entry type as "Upload a .ZIP file" and then upload the .zip file to the Lambda.
-8. Keep the Handler as index.handler (this refers to the main js file in the zip).
-9. Create a basic execution role and click create.
-10. Leave the Advanced settings as the defaults.
-11. Click "Next" and review the settings then click "Create Function"
-12. Click the "Event Sources" tab and select "Add event source".
-13. Set the Event Source type as Alexa Skills kit and Enable it now. Click Submit.
-14. Copy the ARN from the top right to be used later in the Alexa Skill Setup.
-
-### Alexa Skill Setup
-1. Go to the [Alexa Console](https://developer.amazon.com/edw/home.html) and click Add a New Skill.
-2. Set "InterviewTips" as the skill name and "interview tips" as the invocation name, this is what is used to activate your skill. For example you would say: "Alexa, Ask interview tips for a tip."
-3. Select the Lambda ARN for the skill Endpoint and paste the ARN copied from above. Click Next.
-4. Copy the Intent Schema from the included IntentSchema.json.
-5. Copy the Sample Utterances from the included SampleUtterances.txt. Click Next.
-6. [optional] go back to the skill Information tab and copy the appId. Paste the appId into the index.js file for the variable APP_ID,
-   then update the Lambda source zip file with this change and upload to Lambda again, this step makes sure the Lambda function only serves request from authorized source.
-7. You are now able to start testing your sample skill! You should be able to go to the [Echo webpage](http://echo.amazon.com/#skills) and see your skill enabled.
-8. In order to test it, try to say some of the Sample Utterances from the Examples section below.
-9. Your skill is now saved and once you are finished testing you can continue to publish your skill.
-
 ## Examples
     User: "Alexa, ask Interview Tips for a tip"
     Alexa: "Here's your tip: ..."
+
+ # How to Build an Alexa Skill Like Interview Tips
+
+We want to introduce another way to help you build useful and meaningful skills for Alexa quickly. This code leverages [AWS Lambda](https://aws.amazon.com/lambda/) the [Alexa Skills Kit (ASK)](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit) and the [ASK SDK](https://developer.amazon.com/public/community/post/Tx213D2XQIYH864/Announcing-the-Alexa-Skills-Kit-for-Node-js) while providing the business logic, multiple language support, use cases, error handling and help functions for your skill. To mimic this skill, you just need to come up with a fact idea (like “Interview Tips” or "Python Facts"), plug in your fact list and edit the sample provided (we walk you through how it’s done). It's a valuable way to quickly learn the end-to-end process for building and publishing an Alexa skill.
+
+This tutorial will walk first-time Alexa skills developers through all the required steps involved in creating a skill using this fact skill template, called ‘InterviewTips’. This post assumes you have some familiarity with JavaScript/Node.js (or a similar programming language) and the Alexa Skills Kit.
+
+Using the Alexa Skills Kit, you can build an application that can receive and respond to voice requests made on the Alexa platform.  In this tutorial, you’ll build a web service to handle notifications from Alexa and map this service to a skill in the Amazon Developer Portal, making it available on your device and to all Alexa users after certification.
+
+ After completing this tutorial, you'll know how to do the following:
+
+   * Create a fact-based skill - This tutorial will walk first-time Alexa skills developers through all the required steps involved in creating a fact-based skill using a template called ‘InterviewTips’.
+   * Understand the basics of VUI design - Creating this skill will help you understand the basics of creating a working Voice User Interface (VUI) while using a cut/paste approach to development. You will learn by doing, and end up with a published Alexa skill. This tutorial includes instructions on how to customize the skill and submit it for certification. For guidance on designing a voice experience with Alexa you can also [watch this video](https://goto.webcasts.com/starthere.jsp?ei=1087592).
+   * Use JavaScript/Node.js and the Alexa Skills Kit to create a skill - You will use the template as a guide but the customization is up to you. For more background information on using the Alexa Skills Kit please [watch this video](https://goto.webcasts.com/starthere.jsp?ei=1087595).
+   * Get your skill published - Once you have completed your skill, this tutorial will guide you through testing your skill and sending your skill through the certification process, making it available to be enabled by any Alexa user.
+
+# Let's Get Started
+
+## Step 1. Setting up Your Alexa Skill in the Developer Portal
+
+Skills are managed through the Amazon Developer Portal. You’ll link the Lambda function you create to a skill defined in the [Developer Portal](https://developer.amazon.com/)
+
+ 1. Navigate to the Amazon Developer Portal. Sign in or create a free account (upper right). You might see a different image if you have registered already or our page may have changed. If you see a similar menu and the ability to create an account or sign in, you are in the right place.
+
+  ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/devsignin.png)
+
+ 2. Once signed in, navigate to Alexa and select **"Getting Started"** under Alexa Skills Kit.
+
+  ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/Getstartedask.png)
+
+ 3. Here is where you will define and manage your skill. Select **"Add a New Skill"**
+
+  ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/AddnewSkill.png)
+
+ 4. Select an initial language you want to support, and then optionally add additional languages later if needed (in Step 6). Make sure the radio button for the custom interaction model is selected for “Skill Type”. Add the name of the skill. You can use “My Fact Skill” for this example. Remember, when you create a skill that you will publish, you will use a name that you define for your skill. That name will be the one that shows up in the Alexa App. Add the invocation name. Since we are using the sample, type “interview tips”. Since we will not use Audio Player for this skill, select "No". **Note**: "Global Fields" information apply to all languages supported by the skill. Finally, select **Next**.
+
+   ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/skill_information.PNG)
+
+ 5. Now, notice you're in the Interaction Model section.
+
+   ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/interactionmodel.png)
+
+ 6. Next, we need to define our skill’s Interaction Model. Let’s begin with the intent schema. In the context of Alexa, an intent represents an action that fulfills a user’s spoken request. Intents can optionally have arguments called slots. We will not be using custom slots in this template, but they are very useful if you want to parameterize your intents. Note: You will need to define both custom slot type values and sample utterances in language that matches current language tab.
+
+* Review the intent schema below. This is written in JSON and provides the information needed to map the intents we want to handle programmatically.  Copy this from the intent schema in the [GitHub repository here](https://github.com/alexa/skill-sample-nodejs-fact/blob/master/speechAssets/IntentSchema.json).
+
+* You will see the intents for getting a new fact, and then a collection of built-in intents to simplify handling common user tasks. Help intent will handle any time the user asks for help, stop and cancel are built-in intents to make it easier for you to handle when a user wants to exit the application. For more on the use of built-in intents, go [here](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/implementing-the-built-in-intents).
+
+```JSON
+{
+  "intents": [
+    {
+      "intent": "GetNewTipIntent"
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
+    }
+  ]
+}
+```
+
+ 7. The next step is to build the utterance list.
+
+    Given the flexibility and variation of spoken language in the real world, there will often be many different ways to express the same request. Providing these different phrases in your sample utterances will help improve voice recognition for the abilities you add to Alexa. It is important to include as wide a range of representative samples as you can -– all the phrases that you can think of that are possible in use (though do not include samples that users will never speak). Alexa also attempts to generalize based on the samples you provide to interpret spoken phrases that differ in minor ways from the samples specified.
+
+    Now it's time to add the utterances. Select and copy/paste the sample utterances from [GitHub](https://github.com/alexa/skill-sample-nodejs-fact/blob/master/speechAssets) with your initial language. For example, if your select English (US) as initial language above, then you will need to copy/paste SampleUtterances_en_US.txt in previous link. An example of utterances is listed below. Once they are copied, the screen should look similar to the following image:
+
+  ```
+GetNewTipIntent a tip
+GetNewTipIntent an interview tip
+GetNewTipIntent tell me a tip
+GetNewTipIntent tell me an interview tip
+GetNewTipIntent give me a tip
+GetNewTipIntent give me an interview tip
+GetNewTipIntent give me some information
+GetNewTipIntent give me some interview information
+GetNewTipIntent tell me something
+GetNewTipIntent give me something
+  ```
+
+ 8. Select **Save**. You should see the interaction model being built (this might a take a minute or two). If you select next, your changes will be saved and you will go directly to the Configuration screen. After selecting Save, it should now look like this, based on Alexa official documentation:
+
+    ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/interaction_model_overview.png)
+
+Next we will configure the AWS Lambda function that will host the logic for our skill.
+
+## Step 2: Creating Your Skill Logic Using AWS Lambda
+
+### Installing and Working with the Alexa Skills Kit SDK for Node.js (alexa-sdk)
+
+To make the development of skills easier, we have created the ASK SDK for Node.js. We will be using this module to deploy the sample. The Alexa SDK is available on [GitHub](https://github.com/alexa/alexa-skills-kit-sdk-for-nodejs) and can be deployed as a Node package from within your Node.js environment.
+
+### Create an AWS Account
+
+ ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/aws_home.png)
+
+  1. Open [aws.amazon.com](https://aws.amazon.com/) and then choose **‘Create a Free Account’**
+
+* Follow the online instructions. Do not worry about the IAM role, we will do that later.
+* You will need a Valid Credit Card to set up your account (note the AWS Free Tier will suffice however. You can find out more about the free tier [here](https://aws.amazon.com/free/).)
+* Part of the sign-up procedure involves receiving a phone call and entering a PIN using the phone keypad.
+
+ 2. Sign in to the AWS Console
+
+  ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/aws_login.png)
+
+ 3. It can sometimes take a couple of minutes for your new AWS account to go live. You will receive an e-mail when your account is active.
+
+### Create an AWS Lambda Function
+
+AWS Lambda lets you run code without provisioning or managing servers. You pay only for the compute time you consume - there is no charge when your code is not running. With Lambda, you can run code for virtually any type of application or backend service - all with zero administration. Just upload your code and Lambda takes care of everything required to run and scale your code with high availability.
+
+**Note: If you are new to Lambda and would like more information, visit the [Lambda Getting Started Guide](https://docs.aws.amazon.com/lambda/latest/dg/getting-started.html)**
+
+ 1. **IMPORTANT**: For Regions (upper right) , Select **US East (N. Virginia)** for US skills and **EU (Ireland)** for UK/DE skills. These are the only two regions currently supported for Alexa skill development on AWS Lambda, and choosing the right region will guarantee lower latency.
+
+ ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/aws_region.png)
+
+ 2. Select **Lambda** from Compute services (upper left)
+
+ ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/aws_lambda.png)
+
+ 3. Select **“Create a Lambda Function”** to begin the process of defining your Lambda function.
+
+ 4. In the **‘Select Blueprint’** page, filter on **'Alexa'**, select **“alexa-skill-kit-sdk-factskill”**
+
+ 5. Now, you need to configure the event that will trigger your function to be called. As we are building skills with the Alexa Skills Kit, click on the gray dash-lined box and select Alexa Skills Kit from the dropdown menu.
+
+ ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/aws_lambda_ask.png)
+
+ 6. Choose **Next** to continue.
+
+ ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/aws_next.png)
+
+ 7. You should now be in the **"Configure Function"** section. Enter the Name, Description, and select "Node 4.3" as the Runtime for your skill as in the example.
+
+ ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/aws_config_function.png)
+
+ 8. Select the **‘Code Entry Type’** as **‘Upload Zip File’** and upload the zip file containing the example you created in Step 1. **Note:** This zip file should contain the contents of the src directory, including the node_modules subfolder. So it should contain, in the Interview Tips example, an `AlexaSkill.js` file and an `index.js` file.
+
+ ### `AlexaSkill.js` Interview Tips Example:
+
+ ``` javascript
+ 'use strict';
+
+function AlexaSkill(appId) {
+  this._appId = appId;
+}
+
+AlexaSkill.speechOutputType = {
+  PLAIN_TEXT: 'PlainText',
+  SSML: 'SSML'
+};
+
+AlexaSkill.prototype.requestHandlers = {
+  LaunchRequest: function (event, context, response) {
+    this.eventHandlers.onLaunch.call(this, event.request, event.session, response);
+  },
+
+  IntentRequest: function (event, context, response) {
+    this.eventHandlers.onIntent.call(this, event.request, event.session, response);
+  },
+
+  SessionEndedRequest: function (event, context) {
+    this.eventHandlers.onSessionEnded(event.request, event.session);
+    context.succeed();
+  }
+};
+
+ // Override any of the eventHandlers as needed
+AlexaSkill.prototype.eventHandlers = {
+  // Called when the session starts. Subclasses could have overriden this function to open any necessary resources.
+  onSessionStarted: function (sessionStartedRequest, session) {
+  },
+
+  // Called when the user invokes the skill without specifying what they want. The subclass must override this function and provide feedback to the user.
+  onLaunch: function (launchRequest, session, response) {
+    throw 'onLaunch should be overriden by subclass';
+  },
+
+  // Called when the user specifies an intent.
+  onIntent: function (intentRequest, session, response) {
+    var intent = intentRequest.intent,
+      intentName = intentRequest.intent.name,
+      intentHandler = this.intentHandlers[intentName];
+    if (intentHandler) {
+      console.log('dispatch intent = ' + intentName);
+      intentHandler.call(this, intent, session, response);
+    } else {
+      throw 'Unsupported intent = ' + intentName;
+    }
+  },
+
+  // Called when the user ends the session. Subclasses could have overriden this function to close any open resources.
+  onSessionEnded: function (sessionEndedRequest, session) {
+  }
+};
+
+// Subclasses should override the intentHandlers with the functions to handle specific intents.
+AlexaSkill.prototype.intentHandlers = {};
+
+AlexaSkill.prototype.execute = function (event, context) {
+  try {
+    console.log('session applicationId: ' + event.session.application.applicationId);
+
+    // Validate that this request originated from authorized source.
+    if (this._appId && event.session.application.applicationId !== this._appId) {
+      console.log('The applicationIds do not match : ' + event.session.application.applicationId + ' and '
+                + this._appId);
+      throw 'Invalid applicationId';
+    }
+
+    if (!event.session.attributes) {
+      event.session.attributes = {};
+    }
+
+    if (event.session.new) {
+      this.eventHandlers.onSessionStarted(event.request, event.session);
+    }
+
+    // Route the request to the proper handler which may have been overriden.
+    var requestHandler = this.requestHandlers[event.request.type];
+    requestHandler.call(this, event, context, new Response(context, event.session));
+  } catch (e) {
+    console.log('Unexpected exception ' + e);
+    context.fail(e);
+  }
+};
+
+var Response = function (context, session) {
+  this._context = context;
+  this._session = session;
+};
+
+function createSpeechObject(optionsParam) {
+  if (optionsParam && optionsParam.type === 'SSML') {
+    return {
+      type: optionsParam.type,
+      ssml: optionsParam.speech
+    };
+  } else {
+    return {
+      type: optionsParam.type || 'PlainText',
+      text: optionsParam.speech || optionsParam
+    };
+  }
+}
+
+Response.prototype = (function () {
+  var buildSpeechletResponse = function (options) {
+    var alexaResponse = {
+      outputSpeech: createSpeechObject(options.output),
+      shouldEndSession: options.shouldEndSession
+    };
+    if (options.reprompt) {
+      alexaResponse.reprompt = {
+        outputSpeech: createSpeechObject(options.reprompt)
+      };
+    }
+    if (options.cardTitle && options.cardContent) {
+      alexaResponse.card = {
+        type: 'Simple',
+        title: options.cardTitle,
+        content: options.cardContent
+      };
+    }
+    var returnResult = {
+      version: '1.0',
+      response: alexaResponse
+    };
+    if (options.session && options.session.attributes) {
+      returnResult.sessionAttributes = options.session.attributes;
+    }
+    return returnResult;
+  };
+
+  return {
+    tell: function (speechOutput) {
+      this._context.succeed(buildSpeechletResponse({
+        session: this._session,
+        output: speechOutput,
+        shouldEndSession: true
+      }));
+    },
+    tellWithCard: function (speechOutput, cardTitle, cardContent) {
+      this._context.succeed(buildSpeechletResponse({
+        session: this._session,
+        output: speechOutput,
+        cardTitle: cardTitle,
+        cardContent: cardContent,
+        shouldEndSession: true
+      }));
+    },
+    ask: function (speechOutput, repromptSpeech) {
+      this._context.succeed(buildSpeechletResponse({
+        session: this._session,
+        output: speechOutput,
+        reprompt: repromptSpeech,
+        shouldEndSession: false
+      }));
+    },
+    askWithCard: function (speechOutput, repromptSpeech, cardTitle, cardContent) {
+      this._context.succeed(buildSpeechletResponse({
+        session: this._session,
+        output: speechOutput,
+        reprompt: repromptSpeech,
+        cardTitle: cardTitle,
+        cardContent: cardContent,
+        shouldEndSession: false
+      }));
+    }
+  };
+})();
+
+module.exports = AlexaSkill;
+ ```
+
+ ### `index.js` Interview Tips Example:
+
+ ``` javascript
+ 'use strict';
+
+// App ID for the skill.
+var APP_ID = undefined;
+
+// Array containing interview tips.
+var TIPS = [
+  'Remember to bring a notebook, a pen, resumes, references, a portfolio, and code samples to your interview.',
+  'Do not forget to turn off your phone.',
+  'Make sure there is nothing between your teeth.',
+  'Maintain eye contact and give a firm handshake.',
+  'Give honest, direct answers. Do not ramble.',
+  'Listen carefully and welcome hard questions with a smile.',
+  'If you do not understand a question, politely ask for clarification.',
+  'Arrive 10 to 15 minutes early.'
+];
+
+// Require the AlexaSkill prototype and helper functions.
+var AlexaSkill = require('./AlexaSkill');
+
+// interviewTips is a child of AlexaSkill via inheritance.
+var Tip = function () {
+  AlexaSkill.call(this, APP_ID);
+};
+
+// Extend AlexaSkill
+Tip.prototype = Object.create(AlexaSkill.prototype);
+Tip.prototype.constructor = Tip;
+
+Tip.prototype.eventHandlers.onSessionStarted = function (sessionStartedRequest, session) {
+  console.log('onSessionStarted requestId: ' + sessionStartedRequest.requestId + ', sessionId: ' + session.sessionId);
+  // any initialization logic goes here
+};
+
+Tip.prototype.eventHandlers.onLaunch = function (launchRequest, session, response) {
+  //console.log("onLaunch requestId: " + launchRequest.requestId + ", sessionId: " + session.sessionId);
+  handleNewTipRequest(response);
+};
+
+// Overridden to show that a subclass can override this function to teardown session state.
+Tip.prototype.eventHandlers.onSessionEnded = function (sessionEndedRequest, session) {
+  console.log('onSessionEnded requestId: ' + sessionEndedRequest.requestId + ', sessionId: ' + session.sessionId);
+  // any cleanup logic goes here
+};
+
+Tip.prototype.intentHandlers = {
+  'GetNewTipIntent': function (intent, session, response) {
+    handleNewTipRequest(response);
+  },
+
+  'AMAZON.HelpIntent': function (intent, session, response) {
+    response.ask('You can say tell me a resume tip, or, you can say exit... What can I help you with?", "What can I help you with?');
+  },
+
+  'AMAZON.StopIntent': function (intent, session, response) {
+    var speechOutput = 'Goodbye';
+    response.tell(speechOutput);
+  },
+
+  'AMAZON.CancelIntent': function (intent, session, response) {
+    var speechOutput = 'Goodbye';
+    response.tell(speechOutput);
+  }
+};
+
+// Gets a random new tip from the list and returns to the user.
+function handleNewTipRequest(response) {
+
+  // Get a random interview tip from the interview tips list
+  var tipIndex = Math.floor(Math.random() * TIPS.length);
+  var randomTip = TIPS[tipIndex];
+
+  // Create speech output
+  var speechOutput = 'Here is your tip: ' + randomTip;
+  var cardTitle = 'Your Interview Tip';
+  response.tellWithCard(speechOutput, cardTitle, speechOutput);
+}
+
+// Create the handler that responds to the Alexa Request.
+exports.handler = function (event, context) {
+  // Create an instance of the interviewTips skill.
+  var tip = new Tip();
+  tip.execute(event, context);
+};
+```
+
+ ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/aws_upload_zip.png)
+
+ 9. Set your handler and role as follows:
+
+    * Keep Handler as ‘index.handler’
+    * Drop down the “Role” menu and select **“Create a new custom role”**. (Note: if you have already used Lambda you may already have a ‘lambda_basic_execution’ role created that you can use.) This will launch a new tab in the IAM Management Console.
+
+ ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/aws_role.png)
+
+ 10. You will be asked to set up your Identity and Access Management or “IAM” role if you have not done so. AWS Identity and Access Management (IAM) enables you to securely control access to AWS services and resources for your users. Using IAM, you can create and manage AWS users and groups, and use permissions to allow and deny their access to AWS resources. We need to create a role that allows our skill to invoke this Lambda function. In the Role Summary section, select "Create a new IAM Role" from the IAM Role dropdown menu. The Role Name and policy document will automatically populate.
+
+ ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/iam_role.png)
+
+ 11. Select **“Allow”** in the lower right corner and you will be returned to your Lambda function.
+
+ ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/allowrole.png)
+
+ 12. Keep the Advanced settings as default. Select **‘Next’** and review. You should see something like below. Then select **‘Create Function’**:
+
+ ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/CreateFunctionbuitton.png)
+
+ 13. Congratulations, you have created your AWS Lambda function. **Copy** the ARN for use in the Configuration section of the Amazon Developer Portal.
+
+![](https://s3.amazonaws.com/lantern-code-samples-images/fact/ARN.png)
+
+## Step 3: Add Your Lambda Function to Your Skill
+
+ 1. Navigate back to [developer.amazon.com](https://developer.amazon.com/) and select your skill from the list. You can select the skill name or the edit button.
+
+ ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/my_fact_skill_edit.png)
+
+ 2. Select the Configuration section. Add the ARN from the Lambda function you created in the AWS Console earlier. Select the **Lambda ARN (Amazon Resource Name)** radio button and tick the corresponding region. Then, select **“No”** for account linking since we will not be connecting to an external account for this tutorial. Paste the ARN you copied earlier into the Endpoint field. Then select **Next**. **Note:** the region(s) here should match the region(s) of your Lambda function(s).
+
+ ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/configuration.png)
+
+ 3. You have now completed the initial development of your skill. Now it's time to test.
+
+## Step 4: Testing Your Skill
+
+ 1. In the Test area, we are going to enter a sample utterance in the Service Simulator section and see how Alexa will respond. In this example, we have called the skill ‘Interview Tips’. This is the ‘Invocation Name’ we set up in the “Skill Information” section.
+
+    * In the Service Simulator, type **‘open Interview Tips’** and select **“Give Me a Tip”**. The below image is from an app in the Alexa official docs called Space Geek. It will work the same.
+
+  ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/openspacegeek.png)
+
+ 2. You should see the formatted JSON request from the Alexa Service and the response coming back. Verify that you get a correct Lambda response, and notice the card output. You will want to customize this output later.
+
+  ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/servicesimulator.png)
+
+ 3. (Optional) Testing with your device. This is optional as you can do all the testing in the portal. Assuming your Alexa device is on-line (and logged in with the same account as your developer account), you should now see your skill enabled in the Alexa app and ask Alexa to launch your skill. For more information on testing an Alexa skill and registering an Alexa-enabled device, [check here](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/testing-an-alexa-skill).
+
+  ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/alexaappskill.png)
+
+### Not working (getting an invalid response)?
+* Do you have the right ARN copied from your Developer Portal/Skill into your your Lambda function?
+* Are you calling the right invocation name?
+* Are you saying launch, start or open?
+* Are you sure you have no other skills in your accounts with the same invocation name?
+* For this template specifically, you should have a minimum of 20 facts for a good customer experience.
+
+## Step 5: Make it Yours
+
+ 1. In the Skill Information section in the Developer Console, edit the Skill Information Tab to reflect your new Fact Skill:
+
+   * Provide a skill name that represents the new skill you are creating.
+   * Come up with a cool Invocation Name that users will use to invoke your skill
+   * Create a fun icon. Be sure you have the rights to whatever icons you are uploading – you will need to provide both 108x108px and 512x512px images. Need help finding an image? See PixelBay as a possible source for royalty-free images. Use an image editor (such as Paint on Windows or Preview on Mac) to change the size of the image.
+
+   Everything else can stay as-is for now in the Developer Portal
+
+ 2. [OPTIONAL] If you want to use your own editor, download your code from your Lambda function on aws.amazon.com. From the **'Actions'** dropdown choose **'Download Code'**. If you're using a mac, you may need to add a '.zip' extension to the downloaded file. Uncompress this file. You'll want to edit index.js from the src folder.
+
+ 3. On the code tab of your Lambda function in aws.amazon.com (or in your editor), you can edit your code. Look for corresponding locale strings in languageStrings object. "Ctrl-F" **en-US** for English(U.S.), **en-GB** for English(U.K.) and **de-DE** for German. You will see on line 10 the definition of the facts used in the SpaceGeek example. These are the strings you will want to edit to customize this fact for your use.
+
+  ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/index.png)
+
+ 4. Change the SKILL_NAME variable to the name of your skill.
+
+ ```JSON
+ "SKILL_NAME": "Interview Tips"
+ ```
+
+ 5.  Edit the strings to contain whatever facts or information you would like to make randomly available when a user invokes your skill. A few suggestions:
+ * Only change the "FACT" array values between the double quotes. These are your facts.
+ * Ensure you don’t accidentally delete any quotes or commas. You can always go back to GitHub and copy it again if you make a mistake.
+ * The skill uses a mathematical randomization on your list of facts. It is a good idea to have at least 20 facts in the skill to ensure that the facts do not repeat too quickly. Also remember that because it is random, it is possible that the same fact can be repeated twice.
+ * For extra credit and completely optional- If you would like to ensure that the facts don’t repeat (for a “Daily Fact Skill” for example), you can use a datastore like DynamoDB to store an id that you can check when the user accesses the skill and iterate through the facts. For more information on using DynamoDB with Lambda, [go here](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html).
+
+
+ 6. You will also want to make sure to change the “Interview Tips” references to the name of your skill. You don’t have to edit them all, but the following reference changes are required for certification.
+    * Find this code in the HELP_MESSAGE, and change "interview tips" to your custom words:
+
+    ```JSON
+    "HELP_MESSAGE" : "You can say give me an interview tip, or, you can say exit... What can I help you with?",
+    ```
+ 7.  In order to control who accesses your web service, we should validate the Application Id in requests made to your web service. Let’s go back to your Alexa skill in your Developer Portal for a moment. Copy in your Application Id from the ‘Skill Information’ section in your developer portal
+
+ ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/changeAppId.png)
+
+
+ 8. Copy the Application Id into the value of the APP_ID variable in index.js. Make sure to place the app id in quotation marks.
+ ```JSON
+ var APP_ID = undefined;  // TODO replace with your app ID (OPTIONAL).
+ ```
+
+ 9. A minimum of 20 facts is needed to get started, but about 100 is a good number to keep users engaged. The more the better.
+
+ 10. Be sure to select **SAVE** when you are all done. Note: we test initially in the Developer Portal, not in our Lambda function (AWS).
+
+ 11. If you've downloaded your code to use your own editor, log back into your AWS console and upload the changes you have just made. First you will need to zip up the files into a new archive. You can do this by selecting the files that you need in the src directory (the node_modules directory and your updated index.js) into a new archive. Be sure that you compress the files in the folder, **not the folder itself.**
+
+ 12. Select your Lambda function and on the Code tab, select “Upload” to add the archive you just created.
+
+ ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/uploadupdate.png)
+
+ 13. Once you have successfully added the file you will see it on the screen, then select “Save”.
+
+ 14. Repeat the tests you performed earlier to ensure your changes are functioning properly. See step 4 for a review of how to performs functional tests.
+
+## Step 6: Add Additional Languages (Optional)
+You can use the Alexa Skills Kit to create skills in multiple languages. A skill can support a single language, or any combination of the available languages:
+* English (US)
+* English (UK)
+* German
+
+For more on developing skills in multiple languages, go [here](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/developing-skills-in-multiple-languages)
+
+1. To add an additional language, simply select the Add New Language tab and choose your second language. Choose and fill all necessary information like we did for the initial language of your skill. You will need to define Name and Invocation Name for the current language (e.g. German name for German skills). Then click Save to continue.
+![](https://s3.amazonaws.com/lantern-code-samples-images/fact/german_fact_info.png)
+
+2. In the Interaction Model section, our skill shares the same intent schema and uses different sample utterances and custom slot type values in different languages. Copy intent schema from the intent schema in the [GitHub repository here](https://github.com/alexa/skill-sample-nodejs-fact/blob/master/speechAssets/IntentSchema.json) and change sample utterances into your second language.  We will not be using custom slots in this template, but slot type values should be put in the new language if your skill has them.
+
+![](https://s3.amazonaws.com/lantern-code-samples-images/fact/german_intent.png)
+
+3. Open the source file for your Lambda function, index.js. In the languageString variable, look up the locale for your current language, edit the facts strings and other message like you did for your initial language. Strings are supposed to be defined using your second language.
+![](https://s3.amazonaws.com/lantern-code-samples-images/fact/german_strings.PNG)
+
+4. For better latency, deploying your code to different endpoints is recommended. Follow the Create Lambda Function instructions in Step 2 and be sure to select an appropriate Lambda region. Select **US East (N. Virginia)** for US skills and **EU (Ireland)** for UK/DE skills. Copy the ARN for use in the Configuration section of the Amazon Developer Portal.
+
+5. Go back to skill Configuration section, which contains Global fields for all languages. Add an extra endpoint and paste your Lambda ARN. Save your skill configuration information.
+
+![](https://s3.amazonaws.com/lantern-code-samples-images/fact/german_lambda.png)
+
+6. Test your skill in the second language using Service Simulator or a device.
+
+
+## Step 7: Publish Your Skill
+
+Now we need to go back to our Developer Portal to test and edit our skill and we will be ready for certification.
+
+ 1.  In your skills Test section, enter your Utterances into the Simulator to make sure everything is working with your new facts.
+
+ 2.  Optionally, you can test with your Alexa-enabled device to make sure everything is working correctly. You may find a few words that need to be changed for a better user experience.
+
+ Some things to think about:
+
+  * Is every fact pronounced correctly?
+  * Do you need to change any words to avoid poor pronunciations?
+
+  Because we are randomizing our facts, this could take a while. Instead, you can use the Voice Simulator in the Test section to simulate Alexa’s responses. In the Voice Simulator, type in each fact that you are using to test how Alexa will say it. Use additional punctuation or possibly SSML if you need to better control how Alexa responds. You can find out more about [SSML here](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/speech-synthesis-markup-language-ssml-reference).
+
+  * Have you added in YOUR Application Id as per the previous instruction?
+
+ 3. Select the Publishing Information area of your skill next:
+
+  ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/publishing.png)
+
+For Global fields, choose an proper category. **IMPORTANT**: Add the text “This is based on the Fact Skill Template” to the Testing Instructions section. This alerts the Certification team of your submission using this standardized template, smoothing the road to a faster publish. Also select the countries that you want your skill to be available in.
+
+![](https://s3.amazonaws.com/lantern-code-samples-images/fact/publishing_us.png)
+
+For other publishing information:
+
+   * Spend some time coming up with an enticing, succinct description. This is the only place you have to attract new users. These descriptions show up on the list of [skills available](http://alexa.amazon.com/#skills) in the Alexa app.
+   * In your example phrases, be sure that the examples you use match the utterances that you created in the Interaction Model section. Remember, there are built-in intents such as help and cancel. You can learn more about [built-in intents here](https://developer.amazon.com/appsandservices/solutions/alexa/alexa-skills-kit/docs/implementing-the-built-in-intents#Available%20Built-in%20Intents). You can also review the list of [supported phrases](https://developer.amazon.com/appsandservices/solutions/alexa/alexa-skills-kit/docs/supported-phrases-to-begin-a-conversation) to begin a conversation.
+    * Be sure you have the rights to whatever icons you are uploading – you will need to provide both 108x108px and 512x512px images. If there is any question the Amazon certification team will fail your Alexa skill submission.
+
+  ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/publishing_english.png)
+
+  Once you have uploaded your icons, you should see a success message at the bottom of the screen. Finally, **select Next**.
+
+4. (Optional) For multiple language skill, once you finish and save publishing information for your initial language, you will need to do it again for your second language. Under your second language tab, select publishing infomation, and add additional publishing region(s) to the global fields and all other customer facing information in non-global fields.
+  ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/publishing_de.png)
+  ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/publishing_de_phrases.PNG)
+  ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/publishing_de_icon.png)
+
+ 5.  Privacy and Compliance. On the Privacy and Compliance section, select ‘No’ for spending real money and collecting personal information. Privacy and Terms URL’s are optional. Choose to certify that your skill can be imported to and exported from the US.
+
+6. Select **“Save”**. If your skill supports multiple languages, then you will need to complete Privacy and Compliance for each language before submission.
+    ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/privacy.png)
+
+7. Select “Submit for Certification”
+    ![](https://s3.amazonaws.com/lantern-code-samples-images/fact/privacy_check.png)
+
+8. Finally, confirm your submission. Select “Yes” to submit your skill.
+
+
+
+Congratulations! You have successfully submitted your skill for publication. You will receive progress e-mails and possibly other suggestions from the team on how you can make your skill even better. You can update your skills at any time.
+
+## Check out These Other Developer Resources
+
+* [Alexa Skills Kit (ASK)](https://developer.amazon.com/ask)
+* [Alexa Developer Forums](https://forums.developer.amazon.com/spaces/165/index.html)
+* [Knowledge Base](https://goto.webcasts.com/starthere.jsp?ei=1090197)
+* [Intro to Alexa Skills Kit  - On Demand Webinar](https://goto.webcasts.com/starthere.jsp?ei=1090197)
+* [Voice Design 101 - On Demand Webinar](https://goto.webcasts.com/starthere.jsp?ei=1087594)
+* [Developer Office Hours](https://attendee.gotowebinar.com/rt/8389200425172113931)
+* [Developing Skills in Multiple Languages](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/developing-skills-in-multiple-languages)
+
