@@ -26,14 +26,6 @@ AlexaSkill.prototype.requestHandlers = {
 
  // Override any of the eventHandlers as needed
 AlexaSkill.prototype.eventHandlers = {
-  // Called when the session starts. Subclasses could have overriden this function to open any necessary resources.
-  onSessionStarted: function (sessionStartedRequest, session) {
-  },
-
-  // Called when the user invokes the skill without specifying what they want. The subclass must override this function and provide feedback to the user.
-  onLaunch: function (launchRequest, session, response) {
-    throw 'onLaunch should be overriden by subclass';
-  },
 
   // Called when the user specifies an intent.
   onIntent: function (intentRequest, session, response) {
@@ -47,10 +39,6 @@ AlexaSkill.prototype.eventHandlers = {
       throw 'Unsupported intent = ' + intentName;
     }
   },
-
-  // Called when the user ends the session. Subclasses could have overriden this function to close any open resources.
-  onSessionEnded: function (sessionEndedRequest, session) {
-  }
 };
 
 // Subclasses should override the intentHandlers with the functions to handle specific intents.

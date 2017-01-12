@@ -628,4 +628,3 @@ Congratulations! You have successfully submitted your skill for publication. You
 * [Voice Design 101 - On Demand Webinar](https://goto.webcasts.com/starthere.jsp?ei=1087594)
 * [Developer Office Hours](https://attendee.gotowebinar.com/rt/8389200425172113931)
 * [Developing Skills in Multiple Languages](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/developing-skills-in-multiple-languages)
-
