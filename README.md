@@ -1,3 +1,7 @@
+# Interview Tips Alexa Skill
+
+[![Build Status](https://travis-ci.org/alexa-skillz/interview-tips.svg?branch=master)](https://travis-ci.org/alexa-skillz/interview-tips)
+
 # An AWS Lambda function for Alexa
 An [AWS Lambda](http://aws.amazon.com/lambda) function with an Alexa skill for the Amazon Echo using the Alexa SDK.
 
@@ -8,7 +12,7 @@ This skill has no external dependencies or session management, and creates a Lam
     User: "Alexa, ask Interview Tips for a tip"
     Alexa: "Here's your tip: ..."
 
- # How to Build an Alexa Skill Like Interview Tips
+# How to Build an Alexa Skill Like Interview Tips
 
 We want to introduce another way to help you build useful and meaningful skills for Alexa quickly. This code leverages [AWS Lambda](https://aws.amazon.com/lambda/) the [Alexa Skills Kit (ASK)](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit) and the [ASK SDK](https://developer.amazon.com/public/community/post/Tx213D2XQIYH864/Announcing-the-Alexa-Skills-Kit-for-Node-js) while providing the business logic, multiple language support, use cases, error handling and help functions for your skill. To mimic this skill, you just need to come up with a fact idea (like “Interview Tips” or "Python Facts"), plug in your fact list and edit the sample provided (we walk you through how it’s done). It's a valuable way to quickly learn the end-to-end process for building and publishing an Alexa skill.
 
