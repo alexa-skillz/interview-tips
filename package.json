@@ -4,19 +4,12 @@
   "description": "An [AWS Lambda](http://aws.amazon.com/lambda) function with a custom interview tips Alexa skill.",
   "main": "index.js",
   "scripts": {
-    "test": "istanbul cover _mocha",
-    "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
-    "gulp": "gulp",
-    "lint": "gulp lint"
+    "test": "mocha"
   },
   "keywords": [],
-  "author": "Britt Johnson",
+  "author": "Jonathan Heemstra, Megan Reardon, Peter Kim, Britt Johnson",
   "license": "MIT",
-  "dependencies": {
-    "coveralls": "^2.11.15",
-    "istanbul": "^0.4.5",
-    "superagent": "^3.3.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "alexa-app": "^2.3.4",
     "aws-lambda-mock-context": "^3.0.1",
