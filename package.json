@@ -7,7 +7,7 @@
     "test": "mocha"
   },
   "keywords": [],
-  "author": "Jonathan Heemstra, Megan Reardon, Peter Kim, Britt Johnson",
+  "author": "Britt Johnson",
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
