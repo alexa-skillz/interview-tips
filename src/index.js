@@ -29,18 +29,14 @@ Tip.prototype.constructor = Tip;
 
 Tip.prototype.eventHandlers.onSessionStarted = function (sessionStartedRequest, session) {
   console.log('onSessionStarted requestId: ' + sessionStartedRequest.requestId + ', sessionId: ' + session.sessionId);
-  // any initialization logic goes here
 };
 
 Tip.prototype.eventHandlers.onLaunch = function (launchRequest, session, response) {
-  //console.log("onLaunch requestId: " + launchRequest.requestId + ", sessionId: " + session.sessionId);
   handleNewTipRequest(response);
 };
 
-// Overridden to show that a subclass can override this function to teardown session state.
 Tip.prototype.eventHandlers.onSessionEnded = function (sessionEndedRequest, session) {
   console.log('onSessionEnded requestId: ' + sessionEndedRequest.requestId + ', sessionId: ' + session.sessionId);
-  // any cleanup logic goes here
 };
 
 Tip.prototype.intentHandlers = {

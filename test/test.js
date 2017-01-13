@@ -5,7 +5,6 @@ var index = require('../src/index');
 const context = require('aws-lambda-mock-context');
 const ctx = context();
 
-
 describe('Testing a session with the AboutIntent', function() {
   var speechResponse = null;
   var speechError = null;
