@@ -8,7 +8,7 @@ An [AWS Lambda](http://aws.amazon.com/lambda) function with an Alexa skill for t
 ## Concepts
 This skill has no external dependencies or session management, and creates a Lambda function for handling Alexa Skill requests.
 
-## Examples
+## Example
     User: "Alexa, ask Interview Tips for a tip"
     Alexa: "Here's your tip: ..."
 
